@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '5stardubai.com',
+      },
+    ],
+  },
+  output: 'standalone',
   reactCompiler: true,
 };
 
