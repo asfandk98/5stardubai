@@ -4,10 +4,15 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '5stardubai.com',
+        hostname: 'alainhotel.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.alainhotel.com',
       },
     ],
   },
+
   output: 'standalone',
   reactCompiler: true,
 };
