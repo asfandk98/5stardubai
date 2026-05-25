@@ -9,7 +9,7 @@ import {
   CheckCircle, Clock, AlertCircle, MapPin, BedDouble
 } from "lucide-react"
 
-const API = "https://5stardubai.com/backend/api"
+const API = "https://api.alainhotel.com/backend/api"
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
   "Content-Type": "application/json",

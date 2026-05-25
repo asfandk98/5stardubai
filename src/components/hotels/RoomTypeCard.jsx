@@ -6,7 +6,7 @@
 import { useState } from "react"
 import { ChevronLeft, ChevronRight, BedDouble, Maximize2 } from "lucide-react"
 
-const STORAGE = "https://5stardubai.com/backend/storage/"
+const STORAGE = "https://api.alainhotel.com/backend/storage/"
 
 export default function RoomTypeCard({ room, onSelect, isSelected }) {
   const [imgIdx, setImgIdx] = useState(0)

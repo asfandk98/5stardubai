@@ -7,7 +7,7 @@ import { toast } from "react-hot-toast"
 import { Plus, Trash2, Upload, X, Pencil, Check } from "lucide-react"
 import Link from "next/link"
 
-const API = "https://5stardubai.com/backend/api/admin"
+const API = "https://api.alainhotel.com/backend/api/admin"
 
 const AMENITY_OPTIONS = [
   "Free WiFi", "Swimming Pool", "Spa", "Gym", "Restaurant",
@@ -72,7 +72,7 @@ export default function EditHotelPage() {
           featured:    !!data.featured,
           amenities:   Array.isArray(data.amenities) ? data.amenities : [],
         })
-        if (data.image) setImagePreview(`https://5stardubai.com/backend/storage/${data.image}`)
+        if (data.image) setImagePreview(`https://api.alainhotel.com/backend/storage/${data.image}`)
         setRooms(data.rooms ?? [])
         setLoading(false)
       })

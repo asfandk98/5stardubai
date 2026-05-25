@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import DateSelector from "./DateSelector"
 import GuestSelector from "./GuestSelector"
 
-const API = "https://5stardubai.com/backend/api"
+const API = "https://api.alainhotel.com/backend/api"
 
 // ── Safely parse anything into a Date at midnight ─────────────────────────
 function toDate(val) {

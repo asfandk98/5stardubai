@@ -32,7 +32,7 @@ export default function UserSidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch("https://5stardubai.com/backend/api/logout", {
+      await fetch("https://api.alainhotel.com/backend/api/logout", {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })

@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-const API = "https://5stardubai.com/backend/api"
+const API = "https://api.alainhotel.com/backend/api"
 
 export default function BlogListing() {
   const [posts,   setPosts]   = useState([])
@@ -23,7 +23,7 @@ export default function BlogListing() {
   const getImageUrl = (path) => {
     if (!path) return "/images/hotel-dubai.webp"
     if (path.startsWith("http")) return path
-    return `https://5stardubai.com/backend/storage/${path}`
+    return `https://api.alainhotel.com/backend/storage/${path}`
   }
 
   const formatDate = (dateStr) => {

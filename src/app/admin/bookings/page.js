@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { Search, Eye, X, ChevronDown } from "lucide-react"
 
-const API = "https://5stardubai.com/backend/api/admin"
+const API = "https://api.alainhotel.com/backend/api/admin"
 
 const STATUS_COLORS = {
   pending:   "bg-amber-500/10 text-amber-400 border-amber-500/30",

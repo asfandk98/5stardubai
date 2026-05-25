@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import "react-date-range/dist/styles.css"
 import "react-date-range/dist/theme/default.css"
 
-const API = "https://5stardubai.com/backend/api"
+const API = "https://api.alainhotel.com/backend/api"
 
 const today = () => {
   const d = new Date()

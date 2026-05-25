@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import axios from "axios";
 
-const API = "https://5stardubai.com/backend/api";
+const API = "https://api.alainhotel.com/backend/api";
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);

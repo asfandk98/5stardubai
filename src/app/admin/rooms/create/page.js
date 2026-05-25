@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { Upload, X, ImagePlus } from "lucide-react"
 
-const API = "https://5stardubai.com/backend/api/admin"
+const API = "https://api.alainhotel.com/backend/api/admin"
 
 const ROOM_AMENITIES = [
   "King Size Bed", "Twin Beds", "Ocean View", "Balcony", "Mini Bar",

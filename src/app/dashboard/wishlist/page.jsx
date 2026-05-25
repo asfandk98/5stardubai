@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Heart, Trash2, Star } from "lucide-react"
 
-const API = "https://5stardubai.com/backend/api"
+const API = "https://api.alainhotel.com/backend/api"
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
   "Content-Type": "application/json",

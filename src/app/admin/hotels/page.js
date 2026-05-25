@@ -6,7 +6,7 @@ import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { Plus, Pencil, Trash2, Star } from "lucide-react"
 
-const API = "https://5stardubai.com/backend/api/admin"
+const API = "https://api.alainhotel.com/backend/api/admin"
 
 const STATUS_COLORS = {
   active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
@@ -95,7 +95,7 @@ export default function HotelsPage() {
                   <div className="flex items-center gap-3">
                     {hotel.image ? (
                       <img
-                        src={`https://5stardubai.com/backend/storage/${hotel.image}`}
+                        src={`https://api.alainhotel.com/backend/storage/${hotel.image}`}
                         className="w-10 h-10 rounded-lg object-cover"
                         onError={e => { e.target.style.display = 'none' }}
                       />

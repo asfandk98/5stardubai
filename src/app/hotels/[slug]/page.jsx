@@ -4,7 +4,7 @@ import HotelDetails from "@/components/hotels/HotelDetails"
 import { notFound } from "next/navigation"
 
 async function getHotel(slug) {
-  const url = `https://5stardubai.com/backend/api/hotels/${slug}`
+  const url = `https://api.alainhotel.com/backend/api/hotels/${slug}`
   console.log("🔍 Fetching hotel:", url)
 
   try {
