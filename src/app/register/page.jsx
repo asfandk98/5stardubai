@@ -180,7 +180,7 @@ export default function RegisterPage() {
           {/* Login Link */}
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link href="/login" className="text-rose-500 hover:text-rose-600 font-semibold transition">
+            <Link href="/" className="text-rose-500 hover:text-rose-600 font-semibold transition">
               Sign in
             </Link>
           </p>
