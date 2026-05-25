@@ -6,7 +6,7 @@ import { FiSearch } from "react-icons/fi"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 
-const API = "https://api.alainhotel.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 
 export default function MobileSearchBar({ onOpenFilters }) {
   const router = useRouter()

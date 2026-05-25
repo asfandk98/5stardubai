@@ -6,7 +6,7 @@ import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { Plus, Pencil, Trash2, Star } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api"
 
 const STATUS_COLORS = {
   active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { ChevronLeft, ChevronRight, Lock, Unlock } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api"
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"]
 const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]

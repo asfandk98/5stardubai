@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-const API = "https://api.alainhotel.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 
 export default function BlogListing() {
   const [posts,   setPosts]   = useState([])

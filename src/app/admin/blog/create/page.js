@@ -7,7 +7,7 @@ import { useRouter, useParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { Upload, X } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api"
 
 export default function BlogPostForm() {
   const router  = useRouter()

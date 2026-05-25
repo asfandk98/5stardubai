@@ -27,7 +27,7 @@ export default function AdminTopBar() {
   const handleLogout = async () => {
     setLoggingOut(true)
     try {
-      await fetch("https://api.alainhotel.com/backend/api/logout", {
+      await fetch("https://api.alainhotel.com/api/logout", {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })

@@ -31,7 +31,7 @@ export default function HotelCard({ hotel }) {
       const token = localStorage.getItem("token")
       if (!token) { toast.error("Login to save hotels"); return }
       if (wishlisted) {
-        await fetch(`https://api.alainhotel.com/backend/api
+        await fetch(`https://api.alainhotel.com/api
 /wishlist/${hotel.id}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -39,7 +39,7 @@ export default function HotelCard({ hotel }) {
         toast.success("Removed from wishlist")
         setWishlisted(false)
       } else {
-        await fetch("https://api.alainhotel.com/backend/api/wishlist", {
+        await fetch("https://api.alainhotel.com/api/wishlist", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
           body: JSON.stringify({ hotel_id: hotel.id }),

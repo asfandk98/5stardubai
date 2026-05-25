@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { FiShare2 } from "react-icons/fi"
 
-const API = "https://api.alainhotel.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 
 export default function BlogDetail() {
   const { slug }           = useParams()
@@ -44,7 +44,7 @@ export default function BlogDetail() {
   const getImageUrl = (path) => {
     if (!path) return "/images/hotel-dubai.webp"
     if (path.startsWith("http")) return path
-    return `https://api.alainhotel.com/backend/storage/${path}`
+    return `https://api.alainhotel.com/storage/${path}`
   }
 
   const formatDate = (dateStr) => {

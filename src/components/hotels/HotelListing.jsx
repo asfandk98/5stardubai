@@ -34,7 +34,7 @@ export default function HotelListing({ filters = {}, onClearFilter }) {
       }
     })
 
-    const url = `https://api.alainhotel.com/backend/api
+    const url = `https://api.alainhotel.com/api
 /hotels${params.toString() ? `?${params}` : ""}`
 
     fetch(url)

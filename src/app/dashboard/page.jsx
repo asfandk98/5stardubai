@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { CalendarCheck, Heart, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 function authHeaders() {
   return { Authorization: `Bearer ${localStorage.getItem("token")}` }
 }

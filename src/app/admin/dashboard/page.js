@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react"
 import { Hotel, BedDouble, TrendingUp, DollarSign, Clock, CheckCircle } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api/admin"
 
 export default function AdminDashboard() {
   const [stats,   setStats]   = useState(null)

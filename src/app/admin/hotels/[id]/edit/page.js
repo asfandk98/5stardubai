@@ -7,7 +7,7 @@ import { toast } from "react-hot-toast"
 import { Plus, Trash2, Upload, X, Pencil, Check } from "lucide-react"
 import Link from "next/link"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api"
 
 const AMENITY_OPTIONS = [
   "Free WiFi", "Swimming Pool", "Spa", "Gym", "Restaurant",

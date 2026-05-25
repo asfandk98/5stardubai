@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { X, SlidersHorizontal, Star } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 
 /**
  * FilterModal

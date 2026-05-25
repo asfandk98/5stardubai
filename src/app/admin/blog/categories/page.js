@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { Plus, Pencil, Trash2, X, Check } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api"
 
 export default function BlogCategories() {
   const [categories, setCategories] = useState([])

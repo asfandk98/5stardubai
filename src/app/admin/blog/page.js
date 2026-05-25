@@ -6,7 +6,7 @@ import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { Plus, Pencil, Trash2, Star, Eye, EyeOff } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api/admin"
+const API = "https://api.alainhotel.com/api"
 
 const STATUS_COLORS = {
   published: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
@@ -92,7 +92,7 @@ export default function BlogPosts() {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     {post.featured_image ? (
-                      <img src={`https://api.alainhotel.com/backend/storage/${post.featured_image}`}
+                      <img src={`https://api.alainhotel.com/storage/${post.featured_image}`}
                         className="w-10 h-10 rounded-lg object-cover" />
                     ) : (
                       <div className="w-10 h-10 rounded-lg bg-gray-800 flex items-center justify-center text-xl">📝</div>

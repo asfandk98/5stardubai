@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { CalendarCheck, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` })
 
 const statusConfig = {

@@ -5,7 +5,7 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { Send, Loader2, CheckCircle } from "lucide-react"
 
-const API = "https://api.alainhotel.com/backend/api" 
+const API = "https://api.alainhotel.com/api" 
 
 export default function ContactForm() {
   const [form, setForm] = useState({
