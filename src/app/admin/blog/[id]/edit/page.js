@@ -64,8 +64,8 @@ export default function BlogPostForm() {
           canonical_url:    data.canonical_url ?? "",
           tags:             data.tags ?? "",
         })
-        if (data.featured_image) setFeaturedPreview(`https://api.alainhotel.com/backend/storage/${data.featured_image}`)
-        if (data.og_image)       setOgPreview(`https://api.alainhotel.com/backend/storage/${data.og_image}`)
+        if (data.featured_image) setFeaturedPreview(`https://api.alainhotel.com/storage/${data.featured_image}`)
+        if (data.og_image)       setOgPreview(`https://api.alainhotel.com/storage/${data.og_image}`)
         setLoading(false)
       })
   }, [postId])

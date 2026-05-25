@@ -72,7 +72,7 @@ export default function EditHotelPage() {
           featured:    !!data.featured,
           amenities:   Array.isArray(data.amenities) ? data.amenities : [],
         })
-        if (data.image) setImagePreview(`https://api.alainhotel.com/backend/storage/${data.image}`)
+        if (data.image) setImagePreview(`https://api.alainhotel.com/storage/${data.image}`)
         setRooms(data.rooms ?? [])
         setLoading(false)
       })

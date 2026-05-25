@@ -9,7 +9,7 @@ function resolveImage(hotel) {
   const src = hotel?.image_url || hotel?.image
   if (!src) return null
   if (src.startsWith("http")) return src
-  return `https://api.alainhotel.com/backend/storage/${src}`
+  return `https://api.alainhotel.com/storage/${src}`
 }
 
 export default function NearbyHotels({ hotels = [] }) {

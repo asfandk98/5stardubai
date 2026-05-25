@@ -16,7 +16,7 @@ export default function HotelCard({ hotel }) {
   const [toggling, setToggling] = useState(false)
 
   const imageUrl = hotel.image
-    ? `https://api.alainhotel.com/backend/storage/${hotel.image}`
+    ? `https://api.alainhotel.com/storage/${hotel.image}`
     : "/placeholder-hotel.jpg"
 
   // ✅ Detect if ANY room has an offer

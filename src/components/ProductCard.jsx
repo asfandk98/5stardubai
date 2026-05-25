@@ -14,7 +14,7 @@ function toUrlSlug(slug) {
 function resolveImage(item) {
   if (item?.image_url?.startsWith("http")) return item.image_url
   if (item?.image?.startsWith("http")) return item.image
-  if (item?.image) return `https://api.alainhotel.com/backend/storage/${item.image}`
+  if (item?.image) return `https://api.alainhotel.com/storage/${item.image}`
   return null
 }
 

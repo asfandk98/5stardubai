@@ -95,7 +95,7 @@ export default function HotelsPage() {
                   <div className="flex items-center gap-3">
                     {hotel.image ? (
                       <img
-                        src={`https://api.alainhotel.com/backend/storage/${hotel.image}`}
+                        src={`https://api.alainhotel.com/storage/${hotel.image}`}
                         className="w-10 h-10 rounded-lg object-cover"
                         onError={e => { e.target.style.display = 'none' }}
                       />

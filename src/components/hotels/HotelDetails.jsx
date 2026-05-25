@@ -10,7 +10,7 @@ import { X } from "lucide-react"
 function resolveImage(src) {
   if (!src) return null
   if (src.startsWith("http")) return src
-  return `https://api.alainhotel.com/backend/storage/${src}`
+  return `https://api.alainhotel.com/storage/${src}`
 }
 
 function HotelImage({ src, alt, className }) {

@@ -9,7 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useFilters } from "@/app/context/FiltersContext";
 
-const API = "https://5stardubai.com/backend/api"
+const API = "https://api.alainhotel.com/api"
 
 const tabs = [
   { label: "Home",    href: "/" },
@@ -225,7 +225,7 @@ export default function Header() {
                           <li key={item.id} className="flex items-center justify-between gap-3 hover:bg-gray-50 p-2 rounded-lg group">
                             <div className="flex items-center gap-3">
                               <img
-                                src={`https://5stardubai.com/backend/storage/${item.hotel?.image}`}
+                                src={`https://api.alainhotel.com/storage/${item.hotel?.image}`}
                                 className="w-12 h-12 rounded-lg object-cover shrink-0"
                                 onError={e => e.target.src = "/placeholder-hotel.jpg"}
                                 alt={item.hotel?.title}

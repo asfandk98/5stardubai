@@ -23,7 +23,7 @@ export default function BlogListing() {
   const getImageUrl = (path) => {
     if (!path) return "/images/hotel-dubai.webp"
     if (path.startsWith("http")) return path
-    return `https://api.alainhotel.com/backend/storage/${path}`
+    return `https://api.alainhotel.com/storage/${path}`
   }
 
   const formatDate = (dateStr) => {
