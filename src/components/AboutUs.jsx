@@ -100,7 +100,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Our Story</h2>
           <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
             <p>
-              Founded in 2014, Search Dubai Hotels began with a simple mission: to make finding and booking the perfect hotel as easy as a few clicks. What started as a small team passionate about hospitality has grown into the UAE's leading hotel booking platform.
+              Founded in 2014, Alain Hotels began with a simple mission: to make finding and booking the perfect hotel as easy as a few clicks. What started as a small team passionate about hospitality has grown into the UAE's leading hotel booking platform.
             </p>
             <p>
               We understand that where you stay defines your travel experience. That's why we've partnered with over 500 premium hotels across Dubai, Abu Dhabi, Sharjah, and beyond—from luxurious five-star resorts to charming boutique properties.

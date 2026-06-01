@@ -76,7 +76,7 @@ export default function Footer() {
             <li>
               <Link href="mailto:info@dubaihotelresorts.com" className="flex items-center gap-2 hover:text-rose-500 transition duration-200 group">
                 <FiChevronRight className="text-rose-500 transition-transform duration-200 group-hover:translate-x-1" />
-                Email: info@dubaihotelresorts.com
+                Email: info@alainhotel.com
               </Link>
             </li>
             <li>

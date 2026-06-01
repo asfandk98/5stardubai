@@ -280,7 +280,7 @@ export default function CareersPage() {
 
           {/* FIX: was missing opening <a tag and had bare href= attribute floating in JSX */}
           <a
-            href="mailto:careers@searchdubai.com"
+            href="mailto:careers@alainhotel.com"
             className="inline-block bg-rose-500 hover:bg-rose-600 text-white px-8 py-3 rounded-xl font-semibold transition"
           >
             Send Your Resume

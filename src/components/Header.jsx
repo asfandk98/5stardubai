@@ -180,7 +180,7 @@ export default function Header() {
 
             <Link href="/">
               <h1 className="text-xl font-semibold text-rose-500 tracking-tight cursor-pointer">
-                Search<span className="text-gray-800">Dubai</span>
+                AlAINHOTEL<span className="text-gray-800">DUBAI</span>
               </h1>
             </Link>
 

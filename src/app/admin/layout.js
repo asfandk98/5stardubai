@@ -5,7 +5,7 @@ import AdminSidebar from "./components/AdminSidebar"
 import AdminTopBar from "./components/AdminTopBar"
 
 export const metadata = {
-  title: "Admin — SearchDubaiHotels",
+  title: "Admin — AlAinHotel",
 }
 
 export default function AdminLayout({ children }) {
