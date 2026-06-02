@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import axios from "axios";
-
+export const metadata = {
+  title: "Best Hotels in Dubai | Book Cheap Hotels UAE",
+  description: "Find and book hotels in Dubai, Abu Dhabi, and Sharjah at best prices.",
+  keywords: ["hotels in dubai", "cheap hotels UAE", "abu dhabi hotels"],
+};
 const API = "https://api.alainhotel.com/api";
 
 export default function Home() {
@@ -32,6 +36,14 @@ export default function Home() {
   return (
     // pt-[240px] on mobile (stacked search is taller), pt-[160px] on md+
     <main className="pt-[300px] md:pt-[200px] pb-10 space-y-10 max-w-7xl mx-auto px-4">
+
+      <section className="mt-10 text-gray-600">
+      <h2 className="text-xl font-semibold">Book Hotels in Dubai</h2>
+      <p>
+    Discover the best hotels in Dubai with affordable prices, luxury stays,
+    and family-friendly accommodations. Compare deals and book instantly.
+     </p>
+    </section>
 
       {featured.length > 0 && (
         <ProductCard

@@ -152,7 +152,7 @@ function PaymentResultInner() {
       <div style={{ display: "none" }}>
         <div ref={printRef}>
           <div className="hdr">
-            <div className="brand">Search Dubai Hotels</div>
+            <div className="brand">AlAin Dubai Hotels</div>
             <div className="ttl">Booking Confirmation</div>
             <div className="dt">{order.paid_at}</div>
           </div>
