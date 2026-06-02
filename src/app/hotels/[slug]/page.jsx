@@ -2,13 +2,26 @@ import HotelDetails from "@/components/hotels/HotelDetails"
 
 // Fetch hotel data
 async function getHotel(slug) {
-  const res = await fetch(`https://api.alainhotel.com/api/hotels/${slug}`, {
-    cache: "no-store",
-  })
+  const url = `https://api.alainhotel.com/api/hotels/${slug}`
+  console.log("🔍 Fetching hotel:", url)
 
-  if (!res.ok) return null
-   // ✅ FIX HERE
-  return json.data || json
+  try {
+    const res = await fetch(url, { cache: "no-store" })
+    console.log("📡 Laravel response status:", res.status)
+
+    if (!res.ok) {
+      const text = await res.text()
+      console.log("❌ Laravel error body:", text)
+      return null
+    }
+
+    const data = await res.json()
+    console.log("✅ Hotel found:", data?.title)
+    return data
+  } catch (err) {
+    console.log("💥 Fetch threw:", err.message)
+    return null
+  }
 }
 
 // ✅ SEO Metadata
