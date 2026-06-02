@@ -7,7 +7,8 @@ async function getHotel(slug) {
   })
 
   if (!res.ok) return null
-  return res.json()
+   // ✅ FIX HERE
+  return json.data || json
 }
 
 // ✅ SEO Metadata
