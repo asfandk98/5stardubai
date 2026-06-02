@@ -3,48 +3,39 @@ import HotelDetails from "@/components/hotels/HotelDetails"
 // Fetch hotel data
 async function getHotel(slug) {
   const url = `https://api.alainhotel.com/api/hotels/${slug}`
-  console.log("🔍 Fetching hotel:", url)
 
   try {
     const res = await fetch(url, { cache: "no-store" })
-    console.log("📡 Laravel response status:", res.status)
 
-    if (!res.ok) {
-      const text = await res.text()
-      console.log("❌ Laravel error body:", text)
-      return null
-    }
+    if (!res.ok) return null
 
-    const data = await res.json()
-    console.log("✅ Hotel found:", data?.title)
-    return data
+    const json = await res.json()
+
+    console.log("FULL API:", json)
+
+    // ✅ FIX HERE
+    return json?.data || json || null
+
   } catch (err) {
-    console.log("💥 Fetch threw:", err.message)
+    console.log("ERROR:", err)
     return null
   }
 }
-
 // ✅ SEO Metadata
 export async function generateMetadata({ params }) {
-  const hotel = await getHotel(params.slug)
+  const { slug } = await params
+  const hotel = await getHotel(slug)
 
   if (!hotel) {
-    return {
-      title: "Hotel not found | Alain Hotel",
-    }
+    return { title: "Hotel Not Found" }
   }
 
-  return {
-    title: `${hotel.title} in ${hotel.location} | Book Now`,
-    description:
-      hotel.description?.slice(0, 155) ||
-      `Book ${hotel.title} in ${hotel.location}. Best price guaranteed.`,
+  const title = hotel.title || hotel.name || "Hotel in UAE"
+  const location = hotel.location || "UAE"
 
-    openGraph: {
-      title: hotel.title,
-      description: hotel.description,
-      images: [hotel.image],
-    },
+  return {
+    title: `${title} | Book Hotel in ${location}`,
+    description: `Book ${title} in ${location}. Best price guaranteed. From AED ${hotel.price || 0}/night.`,
   }
 }
 
