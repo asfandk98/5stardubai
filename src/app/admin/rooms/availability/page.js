@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { ChevronLeft, ChevronRight, Lock, Unlock } from "lucide-react"
 
-const API = "https://api.alainhotel.com/api"
+const API        = "https://api.alainhotel.com/api/admin"  // for hotels, rooms, block/unblock
+const PUBLIC_API = "https://api.alainhotel.com/api"        // for availability fetch only
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"]
 const DAYS   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
@@ -35,7 +36,7 @@ export default function RoomAvailability() {
   // LOAD HOTELS
   // ─────────────────────────────────────────
   useEffect(() => {
-    fetch(`${API}/hotels`, {
+    fetch(`${PUBLIC_API}/hotels`, {
       headers: { Authorization: `Bearer ${token()}` }
     })
       .then(r => r.json())

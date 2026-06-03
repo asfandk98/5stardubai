@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import { Plus, Trash2, Tag } from "lucide-react"
 
-const API = "https://api.alainhotel.com/api"
+const API = "https://api.alainhotel.com/api/admin"
 
 export default function SeasonalPrices() {
   const [hotels,        setHotels]        = useState([])
