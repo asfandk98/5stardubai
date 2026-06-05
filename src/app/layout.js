@@ -9,7 +9,18 @@ import { Toaster } from "react-hot-toast";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { usePathname } from "next/navigation";
 import { FiltersProvider } from "@/app/context/FiltersContext";
+import AiTripPlanner from "@/components/AiTripPlanner"
 
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <AiTripPlanner />
+      </body>
+    </html>
+  )
+}
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin");
@@ -21,6 +32,7 @@ export default function RootLayout({ children }) {
           {!isAdminRoute && <Header />}
           <main className="flex-1">
             {children}
+            <AiTripPlanner />
           </main>
           {!isAdminRoute && <Footer />}
           {!isAdminRoute && <WhatsAppButton />}
