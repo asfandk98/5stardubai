@@ -164,7 +164,7 @@ export default function AiTripPlanner() {
   const send = async () => {
     const text = input.trim()
     if (!text || loading) return
-
+console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "NO ❌ undefined")
     const userMsg = { role: "user", content: text }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
@@ -182,13 +182,14 @@ export default function AiTripPlanner() {
         content: cleanText,
         recommendations,
       }])
-    } catch {
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "Sorry, I'm having trouble connecting. Please try again in a moment.",
-        recommendations: [],
-      }])
-    } finally {
+    } catch (err) {
+  console.error("Full error:", err)
+  setMessages(prev => [...prev, {
+    role: "assistant",
+    content: `Debug: ${err.message}`,
+    recommendations: [],
+  }])
+} finally {
       setLoading(false)
     }
   }
