@@ -3,26 +3,36 @@ import { useState, useRef, useEffect } from "react"
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY
-const LARAVEL_API  = process.env.NEXT_PUBLIC_API_URL // e.g. https://api.chainofhotels.com/api
+const LARAVEL_API  = process.env.NEXT_PUBLIC_API_URL
 
 // ── Fetch hotels from your backend ───────────────────────────────────────────
 async function fetchHotels() {
   try {
+    console.log("Fetching hotels from:", `${LARAVEL_API}/hotels`)
     const res  = await fetch(`${LARAVEL_API}/hotels`)
     const data = await res.json()
-    return Array.isArray(data) ? data : data.data ?? []
-  } catch {
+    console.log("Hotels raw response:", data)
+    const hotels = Array.isArray(data) ? data : data.data ?? []
+    console.log("Hotels loaded:", hotels.length)
+    return hotels
+  } catch (err) {
+    console.error("fetchHotels error:", err)
     return []
   }
 }
 
 // ── Ask Groq to match hotels ──────────────────────────────────────────────────
 async function askGroq(messages, hotels) {
-  const hotelsSummary = hotels.map(h =>
-    `ID:${h.id} | ${h.title} | ${h.location} | AED ${h.price}/night | Type:${h.type} | Rating:${h.rating} | Guests:${h.guests}`
-  ).join("\n")
+  // ✅ If no hotels loaded, tell the AI
+  const hotelsSummary = hotels.length > 0
+    ? hotels.map(h =>
+        `ID:${h.id} | ${h.title} | ${h.location} | AED ${h.price}/night | Type:${h.type ?? "Hotel"} | Rating:${h.rating ?? "N/A"} | Stars:${h.stars ?? "N/A"}`
+      ).join("\n")
+    : "No hotels available at the moment."
 
-  const system = `You are a luxury hotel concierge for Chain of Hotels — a premium Dubai hotel booking platform.
+  console.log("Hotels summary sent to AI:", hotelsSummary)
+
+  const system = `You are a luxury hotel concierge for Al Ain Hotels — a premium Dubai hotel booking platform.
 Your job is to help users find the perfect hotel based on their needs.
 
 Available hotels:
@@ -30,12 +40,14 @@ ${hotelsSummary}
 
 Rules:
 - Be warm, helpful, and concise (2-3 sentences max per reply)
-- When you have enough info (budget, dates, guests), recommend 1-3 hotels by ID
-- Format recommendations EXACTLY like this when ready:
+- When you have enough info (budget, dates, guests, type), recommend 1-3 hotels by their exact ID
+- Format recommendations EXACTLY like this on a new line when ready:
   RECOMMENDATIONS:[{"id":1,"reason":"Perfect for couples with marina views"},{"id":2,"reason":"Best value for families"}]
+- Use the exact numeric ID from the hotel list above
 - If you need more info, ask ONE clarifying question
 - Always respond in plain text except for the RECOMMENDATIONS: JSON
-- Never make up hotels not in the list`
+- Never make up hotels not in the list
+- If no hotels match, say so honestly`
 
   const res = await fetch(GROQ_API_URL, {
     method: "POST",
@@ -49,47 +61,82 @@ Rules:
         { role: "system", content: system },
         ...messages,
       ],
-      max_tokens: 400,
+      max_tokens: 500,
       temperature: 0.7,
     }),
   })
 
-  if (!res.ok) throw new Error("Groq API error")
+  if (!res.ok) {
+    const errBody = await res.text()
+    console.error("Groq error:", res.status, errBody)
+    throw new Error(`Groq API error ${res.status}: ${errBody}`)
+  }
+
   const data = await res.json()
-  return data.choices?.[0]?.message?.content ?? "Sorry, I couldn't process that. Please try again."
+  const content = data.choices?.[0]?.message?.content ?? ""
+  console.log("Groq raw response:", content)
+  return content
 }
 
 // ── Parse hotel recommendations from Groq response ───────────────────────────
 function parseRecommendations(text) {
-  const match = text.match(/RECOMMENDATIONS:(\[.*?\])/s)
-  if (!match) return { text, recommendations: [] }
+  // ✅ More flexible regex — handles multiline and spaces
+  const match = text.match(/RECOMMENDATIONS:\s*(\[[\s\S]*?\])/i)
+  if (!match) {
+    console.log("No RECOMMENDATIONS found in response")
+    return { text, recommendations: [] }
+  }
   try {
     const recommendations = JSON.parse(match[1])
-    const cleanText = text.replace(/RECOMMENDATIONS:\[.*?\]/s, "").trim()
+    console.log("Parsed recommendations:", recommendations)
+    const cleanText = text.replace(/RECOMMENDATIONS:\s*\[[\s\S]*?\]/i, "").trim()
     return { text: cleanText, recommendations }
-  } catch {
+  } catch (err) {
+    console.error("Failed to parse recommendations JSON:", err)
     return { text, recommendations: [] }
   }
 }
 
 // ── Hotel Card shown inside chat ──────────────────────────────────────────────
 function HotelCard({ hotel, reason }) {
-  if (!hotel) return null
+  if (!hotel) {
+    console.warn("HotelCard: hotel not found")
+    return null
+  }
+
+  // ✅ Handle different image URL formats
+  const imageUrl = hotel.image_url?.startsWith("http")
+    ? hotel.image_url
+    : hotel.image?.startsWith("http")
+    ? hotel.image
+    : hotel.image
+    ? `${LARAVEL_API?.replace("/api", "")}/storage/${hotel.image}`
+    : null
+
   return (
-    <a
+    
       href={`/hotels/${hotel.slug}`}
       className="block group mt-2 rounded-2xl overflow-hidden border border-stone-200 hover:border-stone-300 hover:shadow-md transition-all duration-200 bg-white"
     >
-      <div className="relative h-32 overflow-hidden">
-        {hotel.image
-          ? <img src={`${LARAVEL_API?.replace("/api", "")}/storage/${hotel.image}`}
-              alt={hotel.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          : <div className="w-full h-full bg-stone-100 flex items-center justify-center text-3xl">🏨</div>
-        }
+      <div className="relative h-32 overflow-hidden bg-stone-100">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={hotel.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={e => { e.target.style.display = "none" }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-3xl">🏨</div>
+        )}
         <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-xs font-semibold px-2 py-1 rounded-full text-stone-700">
           AED {hotel.price}/night
         </div>
+        {hotel.stars && (
+          <div className="absolute top-2 left-2 bg-amber-400/90 text-xs font-semibold px-2 py-1 rounded-full text-white">
+            {"★".repeat(Number(hotel.stars))}
+          </div>
+        )}
       </div>
       <div className="p-3">
         <p className="font-semibold text-stone-800 text-sm leading-tight">{hotel.title}</p>
@@ -100,7 +147,9 @@ function HotelCard({ hotel, reason }) {
             <span className="text-amber-400 text-xs">★</span>
             <span className="text-xs text-stone-500">{hotel.rating}</span>
           </div>
-          <span className="text-xs text-blue-600 font-medium group-hover:underline">View hotel →</span>
+          <span className="text-xs text-blue-600 font-medium group-hover:underline">
+            View hotel →
+          </span>
         </div>
       </div>
     </a>
@@ -128,14 +177,17 @@ export default function AiTripPlanner() {
   const [input,    setInput]    = useState("")
   const [loading,  setLoading]  = useState(false)
   const [hotels,   setHotels]   = useState([])
-  const [messages, setMessages] = useState([]) // { role, content, recommendations? }
+  const [messages, setMessages] = useState([])
   const [pulse,    setPulse]    = useState(true)
   const bottomRef  = useRef(null)
   const inputRef   = useRef(null)
 
   // Load hotels once
   useEffect(() => {
-    fetchHotels().then(setHotels)
+    fetchHotels().then(data => {
+      setHotels(data)
+      console.log("Hotels set in state:", data.length, "hotels")
+    })
   }, [])
 
   // Stop pulse after 5 seconds
@@ -164,7 +216,12 @@ export default function AiTripPlanner() {
   const send = async () => {
     const text = input.trim()
     if (!text || loading) return
-console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "NO ❌ undefined")
+
+    console.log("=== SEND ===")
+    console.log("GROQ Key:", GROQ_API_KEY ? "✅ Loaded" : "❌ undefined")
+    console.log("LARAVEL API:", LARAVEL_API ?? "❌ undefined")
+    console.log("Hotels in state:", hotels.length)
+
     const userMsg = { role: "user", content: text }
     const newMessages = [...messages, userMsg]
     setMessages(newMessages)
@@ -172,10 +229,13 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
     setLoading(true)
 
     try {
-      // Only send role+content to Groq (strip recommendations)
       const groqHistory = newMessages.map(m => ({ role: m.role, content: m.content }))
       const raw = await askGroq(groqHistory, hotels)
       const { text: cleanText, recommendations } = parseRecommendations(raw)
+
+      console.log("Clean text:", cleanText)
+      console.log("Recommendations:", recommendations)
+      console.log("Hotels to match against:", hotels.map(h => h.id))
 
       setMessages(prev => [...prev, {
         role: "assistant",
@@ -183,13 +243,13 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
         recommendations,
       }])
     } catch (err) {
-  console.error("Full error:", err)
-  setMessages(prev => [...prev, {
-    role: "assistant",
-    content: `Debug: ${err.message}`,
-    recommendations: [],
-  }])
-} finally {
+      console.error("Send error:", err)
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Sorry, I'm having trouble connecting. Please try again in a moment.",
+        recommendations: [],
+      }])
+    } finally {
       setLoading(false)
     }
   }
@@ -211,10 +271,8 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
     <>
       {/* ── Floating Button ── */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-
-        {/* Tooltip on first load */}
         {pulse && !open && (
-          <div className="bg-stone-900 text-white text-xs px-3 py-1.5 rounded-full shadow-lg animate-fade-in whitespace-nowrap">
+          <div className="bg-stone-900 text-white text-xs px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap">
             AI Trip Planner ✨
           </div>
         )}
@@ -234,8 +292,6 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
                 d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
             </svg>
           )}
-
-          {/* Pulse ring */}
           {pulse && !open && (
             <span className="absolute inset-0 rounded-full bg-stone-900 animate-ping opacity-30" />
           )}
@@ -244,9 +300,10 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
 
       {/* ── Chat Window ── */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-stone-200 flex flex-col overflow-hidden"
-          style={{ maxHeight: "75vh" }}>
-
+        <div
+          className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-stone-200 flex flex-col overflow-hidden"
+          style={{ maxHeight: "75vh" }}
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <div className="flex items-center gap-3">
@@ -258,14 +315,28 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
               </div>
               <div>
                 <p className="text-sm font-semibold text-stone-900">AI Concierge</p>
-                <p className="text-xs text-stone-400">Chain of Hotels</p>
+                <p className="text-xs text-stone-400">
+                  Al Ain Hotels
+                  {hotels.length > 0 && (
+                    <span className="ml-1 text-green-500">· {hotels.length} hotels</span>
+                  )}
+                </p>
               </div>
             </div>
-            <button onClick={reset}
-              className="text-xs text-stone-400 hover:text-stone-600 transition px-2 py-1 rounded-lg hover:bg-stone-100">
+            <button
+              onClick={reset}
+              className="text-xs text-stone-400 hover:text-stone-600 transition px-2 py-1 rounded-lg hover:bg-stone-100"
+            >
               New chat
             </button>
           </div>
+
+          {/* ✅ Warning if no hotels loaded */}
+          {hotels.length === 0 && (
+            <div className="mx-4 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl">
+              <p className="text-xs text-amber-700">⚠️ Loading hotel data...</p>
+            </div>
+          )}
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scroll-smooth">
@@ -284,7 +355,8 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
                   {msg.recommendations?.length > 0 && (
                     <div className="mt-2 space-y-2">
                       {msg.recommendations.map(rec => {
-                        const hotel = hotels.find(h => h.id == rec.id)
+                        const hotel = hotels.find(h => String(h.id) === String(rec.id))
+                        console.log(`Looking for hotel id ${rec.id}:`, hotel ? hotel.title : "NOT FOUND")
                         return <HotelCard key={rec.id} hotel={hotel} reason={rec.reason} />
                       })}
                     </div>
@@ -300,11 +372,10 @@ console.log("Key loaded:", process.env.NEXT_PUBLIC_GROQ_API_KEY ? "YES ✅" : "N
                 </div>
               </div>
             )}
-
             <div ref={bottomRef} />
           </div>
 
-          {/* Quick prompts — shown only at start */}
+          {/* Quick prompts */}
           {messages.length <= 1 && (
             <div className="px-4 pb-2 flex flex-wrap gap-1.5">
               {[
