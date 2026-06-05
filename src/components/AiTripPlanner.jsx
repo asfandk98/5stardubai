@@ -23,7 +23,6 @@ async function fetchHotels() {
 
 // ── Ask Groq to match hotels ──────────────────────────────────────────────────
 async function askGroq(messages, hotels) {
-  // ✅ If no hotels loaded, tell the AI
   const hotelsSummary = hotels.length > 0
     ? hotels.map(h =>
         `ID:${h.id} | ${h.title} | ${h.location} | AED ${h.price}/night | Type:${h.type ?? "Hotel"} | Rating:${h.rating ?? "N/A"} | Stars:${h.stars ?? "N/A"}`
@@ -80,7 +79,6 @@ Rules:
 
 // ── Parse hotel recommendations from Groq response ───────────────────────────
 function parseRecommendations(text) {
-  // ✅ More flexible regex — handles multiline and spaces
   const match = text.match(/RECOMMENDATIONS:\s*(\[[\s\S]*?\])/i)
   if (!match) {
     console.log("No RECOMMENDATIONS found in response")
@@ -104,7 +102,6 @@ function HotelCard({ hotel, reason }) {
     return null
   }
 
-  // ✅ Handle different image URL formats
   const imageUrl = hotel.image_url?.startsWith("http")
     ? hotel.image_url
     : hotel.image?.startsWith("http")
@@ -113,6 +110,7 @@ function HotelCard({ hotel, reason }) {
     ? `${LARAVEL_API?.replace("/api", "")}/storage/${hotel.image}`
     : null
 
+  // ✅ FIXED — <a tag was missing before
   return (
     
       href={`/hotels/${hotel.slug}`}
@@ -331,7 +329,7 @@ export default function AiTripPlanner() {
             </button>
           </div>
 
-          {/* ✅ Warning if no hotels loaded */}
+          {/* Warning if no hotels loaded */}
           {hotels.length === 0 && (
             <div className="mx-4 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl">
               <p className="text-xs text-amber-700">⚠️ Loading hotel data...</p>
