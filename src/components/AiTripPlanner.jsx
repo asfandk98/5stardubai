@@ -113,7 +113,7 @@ function HotelCard({ hotel, reason }) {
   // ✅ FIXED — <a tag was missing before
   return (
     
-      href={`/hotels/${hotel.slug}`}
+     <a href={`/hotels/${hotel.slug}`}
       className="block group mt-2 rounded-2xl overflow-hidden border border-stone-200 hover:border-stone-300 hover:shadow-md transition-all duration-200 bg-white"
     >
       <div className="relative h-32 overflow-hidden bg-stone-100">
