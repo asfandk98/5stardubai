@@ -1,9 +1,10 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 
+// ✅ Fixed
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY
-const LARAVEL_API  = process.env.NEXT_PUBLIC_API_URL
+const LARAVEL_API  = process.env.NEXT_PUBLIC_LARAVEL_API_URL
 
 // ── Fetch hotels from your backend ───────────────────────────────────────────
 async function fetchHotels() {
