@@ -1,20 +1,64 @@
 'use client'
 // src/app/admin/blog/create/page.js
-// Also used for edit: src/app/admin/blog/[id]/edit/page.js
 
 import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { toast } from "react-hot-toast"
-import { Upload, X } from "lucide-react"
+import { Upload, X, Sparkles, Loader2 } from "lucide-react"
 
-const API = "https://api.alainhotel.com/api/admin"
+const API      = "https://api.alainhotel.com/api/admin"
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+const GROQ_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY
 
+// ── AI Generator ──────────────────────────────────────────────────────────────
+async function generateBlogPost(title, category) {
+  const prompt = `You are an expert travel and hospitality content writer for a UAE hotel booking platform called Chain of Hotels.
+
+Write a complete, SEO-optimized blog post for the following title:
+"${title}"
+${category ? `Category: ${category}` : ""}
+
+Return ONLY a valid JSON object with NO markdown, NO backticks, NO preamble. Just the raw JSON:
+{
+  "excerpt": "A compelling 1-2 sentence summary under 160 characters",
+  "content": "Full HTML blog post with <h2>, <p>, <ul>, <li> tags. Minimum 600 words. Include practical tips, local insights about UAE/Dubai/Abu Dhabi/Sharjah. Professional and engaging tone.",
+  "meta_title": "SEO meta title under 60 characters",
+  "meta_description": "SEO meta description under 160 characters",
+  "meta_keywords": "keyword1, keyword2, keyword3, keyword4, keyword5",
+  "tags": "tag1, tag2, tag3"
+}`
+
+  const res = await fetch(GROQ_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${GROQ_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "llama3-8b-8192",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 2000,
+      temperature: 0.7,
+    }),
+  })
+
+  if (!res.ok) throw new Error("Groq API error")
+  const data = await res.json()
+  const raw  = data.choices?.[0]?.message?.content ?? ""
+
+  // Strip markdown fences if Groq wraps in ```json
+  const clean = raw.replace(/```json|```/g, "").trim()
+  return JSON.parse(clean)
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function BlogPostForm() {
   const router  = useRouter()
   const params  = useParams()
   const postId  = params?.id
 
-  const [categories, setCategories] = useState([])
+  const [categories,   setCategories]   = useState([])
+  const [generating,   setGenerating]   = useState(false)
   const [form, setForm] = useState({
     title:            "",
     blog_category_id: "",
@@ -29,19 +73,21 @@ export default function BlogPostForm() {
     canonical_url:    "",
     tags:             "",
   })
-  const [featuredImage,    setFeaturedImage]    = useState(null)
-  const [featuredPreview,  setFeaturedPreview]  = useState(null)
-  const [ogImage,          setOgImage]          = useState(null)
-  const [ogPreview,        setOgPreview]        = useState(null)
-  const [saving,           setSaving]           = useState(false)
-  const [loading,          setLoading]          = useState(!!postId)
+  const [featuredImage,   setFeaturedImage]   = useState(null)
+  const [featuredPreview, setFeaturedPreview] = useState(null)
+  const [ogImage,         setOgImage]         = useState(null)
+  const [ogPreview,       setOgPreview]       = useState(null)
+  const [saving,          setSaving]          = useState(false)
+  const [loading,         setLoading]         = useState(!!postId)
 
   const token = () => localStorage.getItem("token")
 
   // Load categories
   useEffect(() => {
     fetch(`${API}/blog/categories`, { headers: { Authorization: `Bearer ${token()}` } })
-      .then(r => r.json()).then(setCategories)
+      .then(r => r.json())
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => {})
   }, [])
 
   // Load existing post if editing
@@ -75,9 +121,43 @@ export default function BlogPostForm() {
     setForm(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }))
   }
 
+  // ── AI Generate ─────────────────────────────────────────────────────────────
+  const handleGenerate = async () => {
+    if (!form.title.trim()) {
+      toast.error("Enter a title first — the AI needs it to generate content")
+      return
+    }
+
+    setGenerating(true)
+    const toastId = toast.loading("✨ AI is writing your blog post…")
+
+    try {
+      const selectedCategory = categories.find(c => c.id == form.blog_category_id)
+      const generated = await generateBlogPost(form.title, selectedCategory?.name)
+
+      setForm(prev => ({
+        ...prev,
+        excerpt:          generated.excerpt          ?? prev.excerpt,
+        content:          generated.content          ?? prev.content,
+        meta_title:       generated.meta_title       ?? prev.meta_title,
+        meta_description: generated.meta_description ?? prev.meta_description,
+        meta_keywords:    generated.meta_keywords    ?? prev.meta_keywords,
+        tags:             generated.tags             ?? prev.tags,
+      }))
+
+      toast.success("✨ Blog post generated! Review and edit before publishing.", { id: toastId })
+    } catch (err) {
+      console.error(err)
+      toast.error("AI generation failed. Check your GROQ_API_KEY or try again.", { id: toastId })
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  // ── Submit ───────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!form.title.trim()) { toast.error("Title is required"); return }
+    if (!form.title.trim())   { toast.error("Title is required"); return }
     if (!form.content.trim()) { toast.error("Content is required"); return }
     setSaving(true)
 
@@ -111,7 +191,7 @@ export default function BlogPostForm() {
           ${preview ? "border-gray-700" : "border-gray-700 hover:border-rose-500"}`}>
           {preview ? (
             <div className="relative inline-block">
-              <img src={preview} className="h-32 rounded-lg object-cover" />
+              <img src={preview} className="h-32 rounded-lg object-cover" alt="preview" />
               <button type="button"
                 onClick={(e) => { e.preventDefault(); setFile(null); setPreview(null) }}
                 className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white">
@@ -144,9 +224,33 @@ export default function BlogPostForm() {
 
   return (
     <div className="max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white">{postId ? "Edit Post" : "New Blog Post"}</h1>
-        <p className="text-gray-500 text-sm mt-1">Fill in all the details below</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{postId ? "Edit Post" : "New Blog Post"}</h1>
+          <p className="text-gray-500 text-sm mt-1">Fill in the details or let AI write it for you</p>
+        </div>
+
+        {/* ── AI Generate Button ── */}
+        <button
+          type="button"
+          onClick={handleGenerate}
+          disabled={generating}
+          className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-60 shadow-lg shadow-violet-900/30"
+        >
+          {generating
+            ? <><Loader2 size={15} className="animate-spin" /> Generating…</>
+            : <><Sparkles size={15} /> Generate with AI</>
+          }
+        </button>
+      </div>
+
+      {/* AI tip banner */}
+      <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl px-4 py-3 flex items-start gap-3">
+        <Sparkles size={16} className="text-violet-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-violet-300 leading-relaxed">
+          <strong>How to use AI:</strong> Enter a title (and optionally select a category), then click <strong>"Generate with AI"</strong>.
+          The AI will write the full post, excerpt, SEO fields and tags. Review everything before publishing.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -155,7 +259,7 @@ export default function BlogPostForm() {
         <Section title="Post Details">
           <Field label="Title *">
             <input name="title" value={form.title} onChange={handleChange} required
-              placeholder="Enter post title…"
+              placeholder="e.g. Best Luxury Hotels in Dubai Marina 2026"
               className="input" />
           </Field>
 
@@ -173,35 +277,34 @@ export default function BlogPostForm() {
 
           <Field label="Excerpt">
             <textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={2}
-              placeholder="Short summary shown in listings…"
+              placeholder="Short summary shown in listings… (AI will fill this)"
               className="input resize-none" />
           </Field>
         </Section>
 
         {/* CONTENT */}
         <Section title="Content">
-          <p className="text-xs text-gray-500 -mt-1 mb-1">
-            Install CKEditor: <code className="bg-gray-800 px-1 rounded text-rose-400">npm install @ckeditor/ckeditor5-react @ckeditor/ckeditor5-build-classic</code>
-          </p>
-          <textarea name="content" value={form.content} onChange={handleChange} rows={12}
-            placeholder="Write your blog post content here… (replace with CKEditor for rich text)"
-            className="input resize-none font-mono text-sm" />
-          {/*
-            Replace textarea with CKEditor:
-            import { CKEditor } from '@ckeditor/ckeditor5-react'
-            import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-            <CKEditor
-              editor={ClassicEditor}
-              data={form.content}
-              onChange={(_, editor) => setForm(p => ({ ...p, content: editor.getData() }))}
-            />
-          */}
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-gray-500">AI generates HTML content — you can edit it below</p>
+            {form.content && (
+              <span className="text-xs text-emerald-400">
+                ✓ {form.content.replace(/<[^>]*>/g, "").length} characters
+              </span>
+            )}
+          </div>
+          <textarea
+            name="content"
+            value={form.content}
+            onChange={handleChange}
+            rows={16}
+            placeholder="Write your blog post here… or click Generate with AI above ✨"
+            className="input resize-none font-mono text-xs leading-relaxed"
+          />
         </Section>
 
         {/* PUBLISH SETTINGS */}
         <Section title="Publish Settings">
           <div className="grid grid-cols-2 gap-6">
-            {/* Status */}
             <Field label="Status *">
               <select name="status" value={form.status} onChange={handleChange} className="input">
                 <option value="draft">Draft</option>
@@ -209,15 +312,12 @@ export default function BlogPostForm() {
                 <option value="archived">Archived</option>
               </select>
             </Field>
-
-            {/* Tags */}
             <Field label="Tags (comma separated)">
               <input name="tags" value={form.tags} onChange={handleChange}
-                placeholder="travel, luxury, dubai…" className="input" />
+                placeholder="AI will suggest tags… or add your own" className="input" />
             </Field>
           </div>
 
-          {/* Toggles */}
           <div className="flex items-center gap-8 pt-2">
             <Toggle
               label="Active"
@@ -240,20 +340,21 @@ export default function BlogPostForm() {
             <ImageUpload
               file={featuredImage} preview={featuredPreview}
               setFile={setFeaturedImage} setPreview={setFeaturedPreview}
-              label="Featured Image"
-              hint="PNG, JPG up to 2MB"
+              label="Featured Image" hint="PNG, JPG up to 2MB"
             />
             <ImageUpload
               file={ogImage} preview={ogPreview}
               setFile={setOgImage} setPreview={setOgPreview}
-              label="OG Image"
-              hint="Recommended: 1200×630px"
+              label="OG Image" hint="Recommended: 1200×630px"
             />
           </div>
         </Section>
 
         {/* SEO */}
         <Section title="SEO Settings">
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-xs text-gray-500">AI fills these automatically — review before publishing</p>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Meta Title">
               <input name="meta_title" value={form.meta_title} onChange={handleChange}
