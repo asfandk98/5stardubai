@@ -70,7 +70,7 @@ export default function Footer() {
             <li>
               <Link href="tel:+97143339900" className="flex items-center gap-2 hover:text-rose-500 transition duration-200 group">
                 <FiChevronRight className="text-rose-500 transition-transform duration-200 group-hover:translate-x-1" />
-                Call Us: +971 4 333 9900
+                Call Us: +971 4 447 3839    
               </Link>
             </li>
             <li>
